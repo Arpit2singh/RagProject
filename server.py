@@ -1,8 +1,18 @@
 from fastapi import FastAPI, UploadFile, Body , File
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Union, List
 from main import extract_text_pdf , chunk_text , embedding_create , store_on_cloud , generate_answer
 
 app = FastAPI() 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 def server():
