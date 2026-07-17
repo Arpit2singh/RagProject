@@ -10,8 +10,12 @@ from rq import SimpleWorker
 
 app = FastAPI() 
 
+class ThreadSafeWorker(SimpleWorker):
+    def _install_signal_handlers(self):
+        pass
+    
 def start_worker():
-    worker = SimpleWorker([queue], connection=connection)
+    worker = ThreadSafeWorker([queue], connection=connection)
     worker.work()
 
 threading.Thread(target=start_worker, daemon=True).start()
