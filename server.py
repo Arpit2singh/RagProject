@@ -1,11 +1,20 @@
 
-from queue_config import queue 
+from queue_config import queue , connection
 from fastapi import FastAPI, UploadFile, Body , File
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Union, List
 from main import extract_text_pdf , chunk_text , embedding_create , store_on_cloud , generate_answer , process_pdf_job , process_query_job
+import threading
+from rq import Worker
+
 
 app = FastAPI() 
+
+def start_worker():
+    worker = Worker([queue], connection=connection)
+    worker.work()
+
+threading.Thread(target=start_worker, daemon=True).start()
 
 app.add_middleware(
     CORSMiddleware,
