@@ -1,3 +1,4 @@
+from typing import List
 from openai import OpenAI
 import os 
 from dotenv import load_dotenv
@@ -6,6 +7,9 @@ import io
 import chromadb
 import google.generativeai as genai 
 import uuid
+from fastapi import FastAPI, UploadFile, Body , File
+from typing import Union, List
+
 
 load_dotenv()  
 
@@ -113,3 +117,19 @@ def generate_answer(question : str , embeddings : list):
    ) 
     
    return response.choices[0].message.content  
+
+
+def process_pdf_job(file_bytes:bytes , filename : str):
+       text = extract_text_pdf(file_bytes)
+       chunks = chunk_text(text) 
+       embed = embedding_create(chunks , True)
+       store_on_cloud(embed, filename=filename)   
+       
+       return {"status": "success", "message": "PDF uploaded and stored successfully"}
+   
+
+def process_query_job(ques : str):
+    embedding = embedding_create([ques], False) 
+    answer = generate_answer(ques, embedding[0]["embedding"])
+    return {"answer" : answer}   
+   
