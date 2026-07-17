@@ -5,13 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Union, List
 from main import extract_text_pdf , chunk_text , embedding_create , store_on_cloud , generate_answer , process_pdf_job , process_query_job
 import threading
-from rq import Worker
+from rq import SimpleWorker
 
 
 app = FastAPI() 
 
 def start_worker():
-    worker = Worker([queue], connection=connection)
+    worker = SimpleWorker([queue], connection=connection)
     worker.work()
 
 threading.Thread(target=start_worker, daemon=True).start()
